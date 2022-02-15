@@ -64,7 +64,7 @@ A list with 7 elements for simulated data. It contains
 \item{status:}{the censoring indicator}
 \item{cluster:}{the clustering indicator}
 \item{censor_prop:}{the censoring proportion}
-\item{T_mean:}{Mean observed follow up time}
+\item{T_mean:}{mean observed follow up time}
 \item{ratio_of_units:}{the proportions of units in each treatment group}
 }
 \description{

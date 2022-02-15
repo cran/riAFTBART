@@ -21,7 +21,7 @@ cal_surv_prob(
 
 \item{train.only}{A logical indicating whether or not only data from the training set should be computed. The default is FALSE.}
 
-\item{cluster.id}{A vector of integers representing the cluster id.}
+\item{cluster.id}{A vector of integers representing the cluster id. The cluster id should be an integer and start from 1.}
 }
 \value{
 A list with the following two components

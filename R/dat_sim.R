@@ -26,7 +26,7 @@
 #' \item{status:}{the censoring indicator}
 #' \item{cluster:}{the clustering indicator}
 #' \item{censor_prop:}{the censoring proportion}
-#' \item{T_mean:}{Mean observed follow up time}
+#' \item{T_mean:}{mean observed follow up time}
 #' \item{ratio_of_units:}{the proportions of units in each treatment group}
 #' @export
 #' @import dplyr
@@ -84,89 +84,85 @@ dat_sim <- function(nK,
                     sigma_y,
                     censor_rate)
 {
-  if (align == TRUE) {
+  if (align == TRUE) { # If align = TRUE, the treatment assignment model will be the same as the predictors for the outcome generating model
     lp_w <- lp_y
     nlp_w <- nlp_y
   }
-  if (is.null(lp_y)) {
+  if (is.null(lp_y)) { # If lp_y is null, we set it as 0s
     lp_y <- rep(0, n_trt)
   }
-  if (is.null(nlp_y)) {
+  if (is.null(nlp_y)) { # If nlp_y is null, we set it as 0s
     nlp_y <- rep(0, n_trt)
   }
-  if (is.null(lp_w)) {
+  if (is.null(lp_w)) { # If lp_w is null, we set it as 0s
     lp_w <- rep(0, n_trt)
   }
-  if (is.null(nlp_w)) {
+  if (is.null(nlp_w)) { # If nlp_w is null, we set it as 0s
     nlp_w <- rep(0, n_trt)
   }
-  sample_size <- nK * K
+  sample_size <- nK * K # Total sample size is number of clusters times the sample size in each cluster
   for (i in 1:length(X)){
-    assign(paste0("x",i), eval(parse(text = X[i])))
+    assign(paste0("x",i), eval(parse(text = X[i]))) # assign xs to the distribution users specified
   }
 
   X_matrix <- matrix(NA, nrow = sample_size, ncol = length(X))
   for (i in 1:dim(X_matrix)[2]){
-    X_matrix[,i] <- eval(parse(text = paste0("x",i)))
+    X_matrix[,i] <- eval(parse(text = paste0("x",i))) # Create an X matrix to store all the generated Xs
   }
-  # random intercepts for w model
-  xi = stats::rnorm(K, 0,sigma_w)
-  # cluster label
-  cl = rep(1:K, each=nK)
-  xiX  = rep(xi, each=nK)
+
+  xi = stats::rnorm(K, 0,sigma_w^2) # Generate random intercepts for the treatment assignment model
+
+  cl = rep(1:K, each=nK) # Generate cluster labels
+  xiX  = rep(xi, each=nK) # Generate random intercepts of the treatment assignment model for all the individuals
 
   treatment_exp_matrix_all <- NULL
-  for (i in 1:(n_trt-1)){
+  for (i in 1:(n_trt-1)){ # Generate treatment exp values based on psi, delta, lp_w, nlp_w and xiX
     treatment_exp_matrix <- exp(eval(parse(text = paste0( psi, "*(",delta[i], "+", lp_w[i], "+", nlp_w[i], "+xiX", ")"))))
     treatment_exp_matrix_all <- cbind(treatment_exp_matrix_all, treatment_exp_matrix)
   }
-  treatment_exp_matrix_all[is.infinite(treatment_exp_matrix_all)] <- 10^8
-  probs <- sweep(treatment_exp_matrix_all, 1, (rowSums(treatment_exp_matrix_all)+1), '/')
+  treatment_exp_matrix_all[is.infinite(treatment_exp_matrix_all)] <- 10^8 # Cap the treatment exp values to 10^8
+  probs <- sweep(treatment_exp_matrix_all, 1, (rowSums(treatment_exp_matrix_all)+1), '/') # Calculate the assignment probability for each treatment group except the last treatment group
 
   prob_last_all <- rep(NA, dim(probs)[1])
   for (i in 1:dim(probs)[1]){
-    prob_last_all[i] <- 1-sum(probs[i,])
+    prob_last_all[i] <- 1-sum(probs[i,]) # Calculate the assignment probability for the last treatment group
   }
-  probs_all <- cbind(probs, prob_last_all)
   w <- rep(NA, dim(probs)[1])
-  for (i in 1:dim(probs)[1]){
+  for (i in 1:dim(probs)[1]){ # Assign treatment to each individual based on the treatment assignment probability for each individual
     w[i] <- sample(x = 1:n_trt, size = 1, prob = c(probs[i,], 1-sum(probs[i,])), replace = TRUE)
   }
   w
-  bk = stats::rnorm (K,0,sigma_y^2)
-  bkT = rep(bk, each = nK)
-  #generate U ~ unif(0,1)
-  U = stats::runif(sample_size,0,1)
+  bk = stats::rnorm (K,0,sigma_y^2) # Generate random intercepts for the outcome generating model
+  bkT = rep(bk, each = nK) # Generate random intercepts of the outcome generating model for all the individuals
+
+  U = stats::runif(sample_size,0,1) # Generate U ~ unif(0,1) used for the outcome generating model
   for (i in 1:n_trt){
     assign(paste0("LP",i,"_final"),NULL)
     assign(paste0("T",i,"_final"),NULL)
   }
 
-  for (j in 1:n_trt){
+  for (j in 1:n_trt){ # Generate the outcome survival time based on lp_y, nlp_y, bkT, lambda and eta
     assign(paste0("LP",j),  eval(parse(text = paste0(lp_y[j], "+", nlp_y[j], "+bkT"))))
     assign(paste0("T",j),  eval(parse(text = paste0("(",lambda[j], "*(-log(U))/exp(",paste0("LP",j),"))","^(1/eta)" ))))
   }
   T_true <- matrix(NA, nrow = sample_size, ncol = n_trt)
-  for (i in 1:n_trt){
+  for (i in 1:n_trt){ # Put the true survival time for each individual into a matrix
     T_true[,i] <- eval(parse(text = paste0("T",i)))
   }
-  T_true_with_treatment <- cbind(T_true, w)
-
-  #observed outcomes
-  Tobs = apply(T_true_with_treatment, 1, function(x) x[1:n_trt][x[n_trt+1]])
-  C <- stats::rexp(sample_size, rate = censor_rate)
-  Tobs_C <- pmin(Tobs,C)
-  censor_rate <- sum(Tobs>C)/sample_size
-  #censoring indicator
-  delta = as.numeric(Tobs>C)
-  T_mean <- tibble(w = as.character(w), Tobs) %>%
+  T_true_with_treatment <- cbind(T_true, w) # cbind to get the matrix for both the true survival time and treatment indicator
+  Tobs = apply(T_true_with_treatment, 1, function(x) x[1:n_trt][x[n_trt+1]])  # Observed survival time for each individual
+  C <- stats::rexp(sample_size, rate = censor_rate) # Generate the censoring time for each individual
+  Tobs_C <- pmin(Tobs,C) # Generate the survival/censoring time for each individual
+  censor_rate <- sum(Tobs>C)/sample_size # Calculate the censoring proportion
+  delta = as.numeric(Tobs>C) # Calculate the censoring indicator
+  T_mean <- tibble(w = as.character(w), Tobs_C) %>% # Generate the mean follow up time for each treatment group
     group_by(w) %>%
-    summarise(T_mean = mean(Tobs)) %>%
+    summarise(T_mean = mean(Tobs_C)) %>%
     bind_rows(tibble(w = "Overall",
-                     T_mean = mean(Tobs))) %>%
+                     T_mean = mean(Tobs_C))) %>%
     dplyr::mutate(T_mean = round(T_mean, 2)) %>%
     as.data.frame()
-  return(
+  return( # Output a list of values
     list(
       covariates = as.data.frame(X_matrix),
       w = w,

@@ -2,16 +2,16 @@
 % Please edit documentation in R/plot_trace.R
 \name{plot.riAFTBART_estimate}
 \alias{plot.riAFTBART_estimate}
-\title{Plot the Trace plots for the paramters from a fitted riAFT-BART model}
+\title{Plot the trace plots for the parameters from a fitted riAFT-BART model}
 \usage{
 \method{plot}{riAFTBART_estimate}(x, focus = "sigma", id = NULL, ...)
 }
 \arguments{
-\item{x}{A fitted object of from riAFTBART_estimate function.}
+\item{x}{A fitted object of from riAFTBART_fit function.}
 
 \item{focus}{A character specifying which parameter to plot.}
 
-\item{id}{A numeric vector indicating the subject or cluster index to plot}
+\item{id}{A numeric vector indicating the subject or cluster index to plot, when the object to plot is random intercepts or predicted log survival time.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
@@ -19,13 +19,13 @@
 A plot
 }
 \description{
-This function create the trace plots for the parameters from a fitted riAFT-BART model.
+This function creates the trace plots for the parameters from a fitted riAFT-BART model.
 }
 \examples{
 \donttest{
 library(riAFTBART)
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -46,7 +46,7 @@ y = exp(logtime)
 C = rexp(N, rate=censoring.rate) # censoring times
 Y = pmin(y,C)
 status = as.numeric(y<=C)
-res <- riAFTBART_fit(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+res <- riAFTBART_fit(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
                       y.train = Y, trt.train = trt.train, trt.test = trt.test,
                       x.train = cbind(x1,x2),
                       x.test = cbind(x1,x2),

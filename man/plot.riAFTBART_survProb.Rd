@@ -27,7 +27,7 @@ This function plot the mean/individual survival curves from a fitted riAFT-BART 
 \donttest{
 library(riAFTBART)
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -48,7 +48,7 @@ y = exp(logtime)
 C = rexp(N, rate=censoring.rate) # censoring times
 Y = pmin(y,C)
 status = as.numeric(y<=C)
-res <- riAFTBART_fit(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+res <- riAFTBART_fit(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
                       y.train = Y, trt.train = trt.train, trt.test = trt.test,
                       x.train = cbind(x1,x2),
                       x.test = cbind(x1,x2),

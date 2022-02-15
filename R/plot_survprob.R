@@ -15,7 +15,7 @@
 #' \donttest{
 #' library(riAFTBART)
 #' set.seed(20181223)
-#' n = 50      # number of clusters
+#' n = 5       # number of clusters
 #' k = 50      # cluster size
 #' N = n*k     # total sample size
 #' cluster.id = rep(1:n, each=k)
@@ -40,7 +40,7 @@
 #' C = rexp(N, rate=censoring.rate) # censoring times
 #' Y = pmin(y,C)
 #' status = as.numeric(y<=C)
-#' res <- riAFTBART_fit(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+#' res <- riAFTBART_fit(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
 #'                       y.train = Y, trt.train = trt.train, trt.test = trt.test,
 #'                       x.train = cbind(x1,x2),
 #'                       x.test = cbind(x1,x2),
@@ -50,16 +50,16 @@
 #' plot(x = surv_prob_res, test.only = TRUE, train.only = FALSE)
 #' }
 plot.riAFTBART_survProb <- function(x, test.only = FALSE, train.only = TRUE, id = NULL,...){
-  if (test.only) {
-    if (is.null(id)) {
+  if (test.only) { # If we only need to plot the survival probability for the test data
+    if (is.null(id)) { # If we only need to plot the mean survival probability for the test data
       plot(x$time.points, x$Surv.test.mean, type = "l", xlab  = "Time points", ylab = "Predicted survival probability")
-    } else {
+    } else { # Plot the individual survival curves for the specific individual
       plot(x$time.points, x$Surv.test[id,], type = "l", xlab  = "Time points", ylab = "Predicted survival probability")
     }
-  } else {
-    if (is.null(id)) {
+  } else { # If we need to plot the survival probability for the training data
+    if (is.null(id)) { # If we only need to plot the mean survival probability
       plot(x$time.points, x$Surv.train.mean, type = "l", xlab  = "Time points", ylab = "Predicted survival probability")
-    } else {
+    } else { # Plot the individual survival curves for the specific individual
       plot(x$time.points, x$Surv.train[id,], type = "l", xlab  = "Time points", ylab = "Predicted survival probability")
     }
   }

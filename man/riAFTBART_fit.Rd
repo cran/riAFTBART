@@ -40,7 +40,7 @@ riAFTBART_fit(
 
 \item{trt.test}{A numeric vector representing the treatment groups for the testing data.}
 
-\item{cluster.id}{A vector of integers representing the clustering id.}
+\item{cluster.id}{A vector of integers representing the clustering id. The cluster id should be an integer and start from 1.}
 
 \item{verbose}{A logical indicating whether to show the progress bar. The default is FALSE}
 
@@ -56,17 +56,17 @@ A list with the following elements:
 \item{tree:}{A matrix with M.keep rows and nrow(x.train) columns represnting the predicted log survival time for x.train.}
 \item{tree.pred:}{A matrix with M.keep rows and nrow(x.test) columns represnting the predicted log survival time for x.test.}
 \item{tau:}{A vector representing the posterior samples of tau, the standard deviation of the random effects.}
-\item{alpha:}{A vector representing the posterior samples of alpha, the parameter expansion term.}
 \item{sigma:}{A vector representing the posterior samples of sigma, the residual/error standard deviation.}
+\item{vip:}{A matrix with M.keep rows and ncol(x.train) columns represnting the variable inclusion proportions for each variable.}
 }
 \description{
-This function is called by riAFTBART function and implement the riAFT-BART algorithm
+This function implements the random effect accelerated failure time BART (riAFT-BART) algorithm.
 }
 \examples{
 \donttest{
 library(riAFTBART)
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -87,7 +87,7 @@ y = exp(logtime)
 C = rexp(N, rate=censoring.rate) # censoring times
 Y = pmin(y,C)
 status = as.numeric(y<=C)
-res <- riAFTBART_fit(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+res <- riAFTBART_fit(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
                       y.train = Y, trt.train = trt.train, trt.test = trt.test,
                       x.train = cbind(x1,x2),
                       x.test = cbind(x1,x2),

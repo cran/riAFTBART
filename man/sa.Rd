@@ -60,15 +60,17 @@ sa(
 \item{...}{Other parameters that can be passed to BART functions}
 }
 \value{
-A list of causal estimands including risk difference in terms of log time between different treatment groups.
+A list with the following elements:
+\item{result_riAFTBART:}{Corrected log survival time for the test data from the riAFT-BART model.}
+\item{c_functions:}{The confounding functions sampled from the specified distribution used in the analysis.}
 }
 \description{
-The function \code{sa} implements the flexible sensitivity analysis approach for unmeasured confounding with multiple treatments from multilevel survival data.
+This function implements the flexible sensitivity analysis approach for unmeasured confounding with multiple treatments from multilevel survival data.
 }
 \examples{
 \donttest{
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -90,7 +92,7 @@ y = exp(logtime)
 C = rexp(N, rate=censoring.rate) # censoring times
 Y = pmin(y,C)
 status = as.numeric(y<=C)
-res_sa <- sa(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+res_sa <- sa(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
              y.train = Y,trt.train = trt.train,trt.test = trt.test,
              x.train = cbind(x1,x2),
              x.test = cbind(x1,x2),

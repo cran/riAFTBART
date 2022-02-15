@@ -6,7 +6,7 @@
 #' @param time.points A numeric vector representing the points at which the survival probability is computed.
 #' @param test.only A logical indicating whether or not only data from the test set should be computed. The default is FALSE.
 #' @param train.only A logical indicating whether or not only data from the training set should be computed. The default is FALSE.
-#' @param cluster.id A vector of integers representing the cluster id.
+#' @param cluster.id A vector of integers representing the cluster id. The cluster id should be an integer and start from 1.
 #'
 #' @return
 #' A list with the following two components
@@ -58,70 +58,64 @@ cal_surv_prob <- function(object, time.points, test.only = FALSE, train.only = F
     stop("All time points must be positive")
   }
   ### Computation of mean survival curves.
-  nsubjects <- nrow(object$tree)
-  nsamples <- ncol(object$tree)
-  ngrid <- length(time.points)
-  log.time.points <- log(time.points)
-  if(test.only) {
-    ntest <- nrow(object$tree.pred)
-    xind.test <- 1:ntest
-    # if(length(time.points) > 1) {
-      SS.test <- matrix(0.0, nrow=ntest, ncol=ngrid)
-      # dim(SS.test)
-      ### TauMat should be nsamples x nclusters
+  nsubjects <- nrow(object$tree) # Number of individuals
+  nsamples <- ncol(object$tree) # Number of posterior samples
+  ngrid <- length(time.points) # Number of time points used to calculate the survival probability
+  log.time.points <- log(time.points) # Log time point value
+  if(test.only) { # If we only need to calculate the survival probability for the test data
+    ntest <- nrow(object$tree.pred) # Number of individuals in the test data
+    xind.test <- 1:ntest # Set the id for the ntest individuals in the test data
+    SS.test <- matrix(0.0, nrow=ntest, ncol=ngrid) # Set the output matrix with nrow = number of individuals and number of columns = Number of time points used to calculate the survival probability
       for(i in xind.test) {
         for(k in 1:ngrid) {
           Amat <- (log.time.points[k] - object$tree.pred[i,] - object$b[cluster.id[i],])/object$sigma
-          SS.test[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples
+          SS.test[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples # Calculate the survival time using normal approximation
         }
         # print(i)
       }
-      SS.test.mean <- colMeans(SS.test)
-    SS.train <- SS.train.mean <- NULL
+      SS.test.mean <- colMeans(SS.test) # Calculate the mean survival time across all the individuals
+    SS.train <- SS.train.mean <- NULL # Since test.only = T, we set NULL to results with training data
   } else if(train.only) {
-      ntrain <- nrow(object$tree)
-      xind.train <- 1:ntrain
-
-      SS.train <- matrix(0.0, nrow=nsubjects, ncol=ngrid)
-
-      ### TauMat should be nsamples x nclusters
+      ntrain <- nrow(object$tree) # Number of individuals in the training data
+      xind.train <- 1:ntrain # Set the id for the ntrain individuals in the training data
+      SS.train <- matrix(0.0, nrow=nsubjects, ncol=ngrid) # Set the output matrix with nrow = number of individuals in the training data and number of columns = Number of time points used to calculate the survival probability
       for(i in xind.train) {
         for(k in 1:ngrid) {
           Amat <- (log.time.points[k] - object$tree[i,] - object$b[cluster.id[i],])/object$sigma
-          SS.train[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples
+          SS.train[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples # Calculate the survival time using normal approximation
         }
         # print(i)
       }
-      SS.train.mean <- colMeans(SS.train)
-      SS.test <- SS.test.mean <- NULL
-  } else if(!train.only & !test.only) {
-    ntest <- ncol(object$m.test)
-      xind.train <- 1:ntrain
-      xind.test <- 1:ntest
-      SS.test <- matrix(0.0, nrow=ntest, ncol=ngrid)
-      SS.train <- matrix(0.0, nrow=ntrain, ncol=ngrid)
-      ### TauMat should be nsamples x nclusters
+      SS.train.mean <- colMeans(SS.train)  # Calculate the mean survival time across all the individuals
+      SS.test <- SS.test.mean <- NULL # Since train.only = T, we set NULL to results with test data
+  } else if(!train.only & !test.only) { # Need to calculate the survival probability for both training and test data
+      ntest <- ncol(object$m.test)# Number of individuals in the test data
+      ntrain <- nrow(object$tree) # Number of individuals in the training data
+      xind.train <- 1:ntrain # Set the id for the ntrain individuals in the training data
+      xind.test <- 1:ntest # Set the id for the ntest individuals in the test data
+      SS.test <- matrix(0.0, nrow=ntest, ncol=ngrid)  # Set the output matrix with nrow = number of individuals in the test data and number of columns = Number of time points used to calculate the survival probability
+      SS.train <- matrix(0.0, nrow=ntrain, ncol=ngrid) # Set the output matrix with nrow = number of individuals in the training data and number of columns = Number of time points used to calculate the survival probability
       for(i in xind.test) {
         for(k in 1:ngrid) {
           Amat <- (log.time.points[k] - object$tree.pred[i,] - object$b[cluster.id[i],])/object$sigma
-          SS.test[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples
+          SS.test[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples# Calculate the survival time using normal approximation in the test data
         }
       }
       for(i in xind.train) {
         for(k in 1:ngrid) {
           Amat <- (log.time.points[k] - object$tree[i,] - object$b[cluster.id[i],])/object$sigma
-          SS.train[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples
+          SS.train[i,k] <- sum(stats::pnorm(Amat, lower.tail=FALSE))/nsamples# Calculate the survival time using normal approximation in the training data
         }
       }
-      SS.test.mean <- colMeans(SS.test)
-      SS.train.mean <- colMeans(SS.train)
+      SS.test.mean <- colMeans(SS.test) # Calculate the mean survival time across all the individuals in the test data
+      SS.train.mean <- colMeans(SS.train) # Calculate the mean survival time across all the individuals in the training data
   }
-  ans <- list()
+  ans <- list() # List to store the outputs
   class(ans) <- "riAFTBART_survProb"
-  ans$Surv.train <- SS.train
-  ans$Surv.test <- SS.test
-  ans$Surv.train.mean <- SS.train.mean
-  ans$Surv.test.mean <- SS.test.mean
-  ans$time.points <- time.points
+  ans$Surv.train <- SS.train # Store the individual survival time for the training data
+  ans$Surv.test <- SS.test # Store the individual survival time for the test data
+  ans$Surv.train.mean <- SS.train.mean # Store the mean individual survival time for the training data
+  ans$Surv.test.mean <- SS.test.mean# Store the mean individual survival time for the test data
+  ans$time.points <- time.points # Store the time points used for the analysis
   return(ans)
 }

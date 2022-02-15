@@ -1,10 +1,10 @@
-#' Plot the Trace plots for the paramters from a fitted riAFT-BART model
+#' Plot the trace plots for the parameters from a fitted riAFT-BART model
 #'
-#' This function create the trace plots for the parameters from a fitted riAFT-BART model.
+#' This function creates the trace plots for the parameters from a fitted riAFT-BART model.
 #'
-#' @param x A fitted object of from riAFTBART_estimate function.
+#' @param x A fitted object of from riAFTBART_fit function.
 #' @param focus A character specifying which parameter to plot.
-#' @param id A numeric vector indicating the subject or cluster index to plot
+#' @param id A numeric vector indicating the subject or cluster index to plot, when the object to plot is random intercepts or predicted log survival time.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return A plot
@@ -14,7 +14,7 @@
 #' \donttest{
 #' library(riAFTBART)
 #' set.seed(20181223)
-#' n = 50      # number of clusters
+#' n = 5       # number of clusters
 #' k = 50      # cluster size
 #' N = n*k     # total sample size
 #' cluster.id = rep(1:n, each=k)
@@ -38,7 +38,7 @@
 #' C = rexp(N, rate=censoring.rate) # censoring times
 #' Y = pmin(y,C)
 #' status = as.numeric(y<=C)
-#' res <- riAFTBART_fit(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+#' res <- riAFTBART_fit(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
 #'                       y.train = Y, trt.train = trt.train, trt.test = trt.test,
 #'                       x.train = cbind(x1,x2),
 #'                       x.test = cbind(x1,x2),
@@ -47,17 +47,15 @@
 #' }
 plot.riAFTBART_estimate <- function(x, focus = "sigma", id = NULL,...){
   if (focus == "sigma"){
-    plot(x$sigma, type="l", main="sigma", ylab="value", col="gray")
+    plot(x$sigma, type="l", main="sigma", ylab="value", col="gray") # Plot the posterior sigma from fitted riAFTBART
   } else if (focus == "tau"){
-    plot(x$tau, type="l", main="tau", ylab="value", col="gray")
-  } else if (focus == "alpha"){
-    plot(x$alpha, type="l", main="alpha", ylab="value", col="gray")
+    plot(x$tau, type="l", main="tau", ylab="value", col="gray") # Plot the posterior tau from fitted riAFTBART
   } else if (focus == "b"){
-    plot(x$b[id,], type="l", main="Random intercept", ylab="value", col="gray")
+    plot(x$b[id,], type="l", main="Random intercept", ylab="value", col="gray") # Plot the random intercept tau for cluster i from fitted riAFTBART
   } else if (focus == "tree"){
-    plot(x$tree[id,], type="l", main="Tree (train)", ylab="value", col="gray")
+    plot(x$tree[id,], type="l", main="Tree (train)", ylab="value", col="gray") # Plot the predicted tree value from training data for one individual from fitted riAFTBART
   } else if (focus == "tree.pred"){
-    plot(x$tree[id,], type="l", main="Tree (test)", ylab="value", col="gray")
+    plot(x$tree[id,], type="l", main="Tree (test)", ylab="value", col="gray") # Plot the predicted tree value from training data for one individual from fitted riAFTBART
   }
 
 }

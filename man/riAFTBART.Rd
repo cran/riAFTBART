@@ -33,7 +33,7 @@ riAFTBART(
 
 \item{trt}{A numeric vector representing the treatment groups.}
 
-\item{cluster.id}{A vector of integers representing the clustering id.}
+\item{cluster.id}{A vector of integers representing the clustering id. The cluster id should be an integer and start from 1.}
 
 \item{verbose}{A logical indicating whether to show the progress bar for riAFT-BART. The default is FALSE}
 
@@ -45,13 +45,13 @@ riAFTBART(
 A list of causal estimands in terms of log T between different treatment groups.
 }
 \description{
-The function implements the random effect accelerated failure time BART (riAFT-BART) for causal inference with multiple treatments and clustered survival outcomes.
+This function implements the random effect accelerated failure time BART (riAFT-BART) for causal inference with multiple treatments and clustered survival outcomes.
 }
 \examples{
 \donttest{
 library(riAFTBART)
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -72,7 +72,7 @@ y = exp(logtime)
 C = rexp(N, rate=censoring.rate) # censoring times
 Y = pmin(y,C)
 status = as.numeric(y<=C)
-res_ate <- riAFTBART(M.burnin = 50, M.keep = 50, M.thin = 1, status = status,
+res_ate <- riAFTBART(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
                       y = Y, trt = trt.train,
                       x = cbind(x1,x2),
                       cluster.id = cluster.id, estimand = "ATE")

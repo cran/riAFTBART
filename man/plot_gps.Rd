@@ -4,12 +4,14 @@
 \alias{plot_gps}
 \title{Plot the propensity score by treatment}
 \usage{
-plot_gps(trt, X, method = "Multinomial")
+plot_gps(trt, X, cluster.id, method = "Multinomial")
 }
 \arguments{
 \item{trt}{A numeric vector representing the treatment groups.}
 
 \item{X}{A dataframe or matrix, including all the covariates but not treatments, with  rows corresponding to observations and columns to variables.}
+
+\item{cluster.id}{A vector of integers representing the clustering id. The cluster id should be an integer and start from 1.}
 
 \item{method}{A character indicating how to estimate the propensity score. The default is "Multinomial", which uses multinomial regression to estimate the propensity score.}
 }
@@ -22,7 +24,7 @@ This function estimates the propensity score for each treatment group and then p
 \examples{
 library(riAFTBART)
 set.seed(20181223)
-n = 50      # number of clusters
+n = 5       # number of clusters
 k = 50      # cluster size
 N = n*k     # total sample size
 cluster.id = rep(1:n, each=k)
@@ -36,5 +38,5 @@ censoring.rate = 0.02
 x1 = stats::rnorm(N,0.5,1)
 x2 = stats::rnorm(N,1.5,0.5)
 trt.train = sample(c(1,2,3), N, prob = c(0.4,0.3,0.2), replace = TRUE)
-plot_gps(trt = trt.train, X = cbind(x1, x2))
+plot_gps(trt = trt.train, X = cbind(x1, x2), cluster.id = cluster.id)
 }
