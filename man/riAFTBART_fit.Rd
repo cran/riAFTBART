@@ -34,11 +34,11 @@ riAFTBART_fit(
 
 \item{x.train}{A dataframe or matrix, including all the covariates but not treatments for training data, with rows corresponding to observations and columns to variables.}
 
-\item{trt.train}{A numeric vector representing the treatment groups for the training data.}
+\item{trt.train}{A numeric vector representing the treatment groups for the training data. If there's no treatment indicator, then set to \code{NULL}.}
 
 \item{x.test}{A dataframe or matrix, including all the covariates but not treatments for testing data, with  rows corresponding to observations and columns to variables.}
 
-\item{trt.test}{A numeric vector representing the treatment groups for the testing data.}
+\item{trt.test}{A numeric vector representing the treatment groups for the testing data. If there's no treatment indicator, then set to \code{NULL}.}
 
 \item{cluster.id}{A vector of integers representing the clustering id. The cluster id should be an integer and start from 1.}
 

@@ -149,6 +149,10 @@ dat_sim <- function(nK,
   for (i in 1:n_trt){ # Put the true survival time for each individual into a matrix
     T_true[,i] <- eval(parse(text = paste0("T",i)))
   }
+  LP_true <- matrix(NA, nrow = sample_size, ncol = n_trt)
+  for (i in 1:n_trt){ # Put the true predicitive values of the outcome for each individual into a matrix
+    LP_true[,i] <- eval(parse(text = paste0("LP",i)))
+  }
   T_true_with_treatment <- cbind(T_true, w) # cbind to get the matrix for both the true survival time and treatment indicator
   Tobs = apply(T_true_with_treatment, 1, function(x) x[1:n_trt][x[n_trt+1]])  # Observed survival time for each individual
   C <- stats::rexp(sample_size, rate = censor_rate) # Generate the censoring time for each individual
@@ -171,7 +175,10 @@ dat_sim <- function(nK,
       censor_prop = censor_rate,
       delta = delta,
       cluster = cl,
-      ratio_of_units = round(table(w) / length(w),2)
+      ratio_of_units = round(table(w) / length(w),2),
+      LP_true = LP_true,
+      lambda = lambda,
+      eta = eta
     )
   )
 

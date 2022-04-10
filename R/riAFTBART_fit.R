@@ -8,12 +8,12 @@
 #' @param status A vector of event indicators: status = 1 indicates that the event was observed while status = 0 indicates the observation was right-censored.
 #' @param y.train A vector of follow-up times.
 #' @param x.train A dataframe or matrix, including all the covariates but not treatments for training data, with rows corresponding to observations and columns to variables.
-#' @param trt.train A numeric vector representing the treatment groups for the training data.
+#' @param trt.train A numeric vector representing the treatment groups for the training data. If there's no treatment indicator, then set to \code{NULL}.
 #' @param x.test A dataframe or matrix, including all the covariates but not treatments for testing data, with  rows corresponding to observations and columns to variables.
 #' @param SA A logical indicating whether to conduct sensitivity analysis. The default is FALSE.
 #' @param prior_c_function_used Prior confounding functions used for SA, which is inherited from the sa function. The default is NULL.
 #' @param gps Generalized propensity score, which is inherited from the sa function. The default is NULL.
-#' @param trt.test A numeric vector representing the treatment groups for the testing data.
+#' @param trt.test A numeric vector representing the treatment groups for the testing data. If there's no treatment indicator, then set to \code{NULL}.
 #' @param cluster.id A vector of integers representing the clustering id. The cluster id should be an integer and start from 1.
 #' @param verbose A logical indicating whether to show the progress bar. The default is FALSE
 #' @return A list with the following elements:
@@ -72,10 +72,19 @@ riAFTBART_fit <- function(M.burnin, M.keep, M.thin = 1, status, y.train, x.train
   aft_model <- survival::survreg(survival::Surv(y.train, status) ~ ., dist="lognormal", data = as.data.frame(cbind(x.train, y.train, status))) # Fit a parametric AFT model that uses all of the predictors and that assumes log-normal residual to get the priors for random intercepts and sigmas
   b.init = tapply(stats::resid(aft_model), cluster.id, mean) # Initial random intercepts: mean of the lognormal residuals from the fitted AFT model
   sigma.init <- stats::sd(tapply(stats::resid(aft_model), cluster.id, mean)) # Initial sigma: Standard deviation of the model residuals over K cluster
-  x.train <- cbind(x.train, trt.train) # add the treatment indicator to the x.train matrix
+  if (is.null(trt.train) ) {
+    x.train <- x.train # If the users do not have trt indicator, then just use x.train
+  } else {
+    x.train <- cbind(x.train, trt.train) # add the treatment indicator to the x.train matrix
+  }
   ncol.x.train <- ncol(x.train) # Number of columns for the new x.train matrix
+  colname_x.train <- colnames(dbarts::makeModelMatrixFromDataFrame(as.data.frame(x.train)))
   colnames(x.train) <- NULL # Remove the column names for x.train
-  x.test <- cbind(x.test, trt.test) # add the treatment indicator to the x.test matrix
+  if (is.null(trt.test) ) {
+    x.test <- x.test # If the users do not have trt indicator, then just use x.train
+  } else {
+    x.test <- cbind(x.test, trt.test) # add the treatment indicator to the x.test matrix
+  }
   colnames(x.test) <- NULL # Remove the column names for x.test
   tau.init = 1 # Set the initial value of tau to 1
   alpha.init = 1 # Set the initial value of alpha to 1
@@ -143,6 +152,7 @@ riAFTBART_fit <- function(M.burnin, M.keep, M.thin = 1, status, y.train, x.train
 
   } # end of m for-loop
   chain.keep$vip <- t(chain.keep$vip) # Final VIP output
+  colnames(chain.keep$vip) <- colname_x.train
   chain.keep$tau <- c(chain.keep$tau) # Final standard deviation of random intercept
   chain.keep$sigma <- c(chain.keep$sigma) # Final standard deviation of residual error
   chain.keep$tree <- chain.keep$tree + null_intercept # Final predicted tree values from training data (in logT scale and we need center back)
