@@ -2,7 +2,7 @@ Package: riAFTBART
 Type: Package
 Title: A Flexible Approach for Causal Inference with Multiple
         Treatments and Clustered Survival Outcomes
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: c(
   person("Liangyuan", "Hu", role = "aut", email = "lh707@sph.rutgers.edu"),
   person("Jiayi", "Ji", role = c("aut", "cre"), email = "jj869@sph.rutgers.edu"))
@@ -13,11 +13,11 @@ LazyData: false
 RoxygenNote: 7.1.2
 Imports: MASS, MCMCpack, msm, dbarts, magrittr, foreach, doParallel,
         dplyr, BART, stringr, tidyr, survival, cowplot, ggplot2, twang,
-        nnet, RISCA, RRF, randomForest
+        nnet, RRF, randomForest
 NeedsCompilation: no
-Packaged: 2022-05-04 19:30:22 UTC; jiayi
+Packaged: 2022-05-16 20:28:13 UTC; jiayi
 Author: Liangyuan Hu [aut],
   Jiayi Ji [aut, cre]
 Maintainer: Jiayi Ji <jj869@sph.rutgers.edu>
 Repository: CRAN
-Date/Publication: 2022-05-16 07:20:02 UTC
+Date/Publication: 2022-05-16 23:20:02 UTC

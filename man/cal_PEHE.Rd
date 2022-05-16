@@ -9,7 +9,7 @@ cal_PEHE(object, metric, time, LP, lambda, eta)
 \arguments{
 \item{object}{An object from cal_survprob() function.}
 
-\item{metric}{A character string representing the metric to be calculated for PEHE. Only \code{"survival"} and \code{"rmst"} is allowed.}
+\item{metric}{A character string representing the metric to be calculated for PEHE. Only \code{"survival"} is allowed.}
 
 \item{time}{A numeric value representing the time point used to calculate PEHE.}
 

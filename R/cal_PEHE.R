@@ -3,7 +3,7 @@
 #' This function calculates the PEHE based on the survival probability from a fitted ri-AFTBART model.
 #'
 #' @param object An object from cal_survprob() function.
-#' @param metric A character string representing the metric to be calculated for PEHE. Only \code{"survival"} and \code{"rmst"} is allowed.
+#' @param metric A character string representing the metric to be calculated for PEHE. Only \code{"survival"} is allowed.
 #' @param time A numeric value representing the time point used to calculate PEHE.
 #' @param LP A numeric vector corresponding to the true linear predictors for each treatment from the simulated data.
 #' @param lambda A numeric value representing the true follow up time for from the simulated data.
@@ -93,16 +93,17 @@ cal_PEHE <- function(object, metric, time, LP, lambda, eta){
       pehe[i] <- true[i]-predicted[i]
     }
     return(list(true = true, predicted = predicted, pehe = pehe))
-  } else if (metric == "rmst"){
-    true <- NULL
-    predicted <- NULL
-    pehe <- NULL
-    for (i in 1:length(LP)){
-      integrate_res <- stats::integrate(fun_true, lower = 0, upper = time)
-      true[i] <- integrate_res$value
-      predicted[i] <- RISCA::rmst(object$time.points, object$Surv.test[i,], max.time = time, type = "l")
-      pehe[i] <- true[i]-predicted[i]
-    }
-    return(list(true = true, predicted = predicted, pehe = pehe))
   }
+  # else if (metric == "rmst"){
+  #   true <- NULL
+  #   predicted <- NULL
+  #   pehe <- NULL
+  #   for (i in 1:length(LP)){
+  #     integrate_res <- stats::integrate(fun_true, lower = 0, upper = time)
+  #     true[i] <- integrate_res$value
+  #     predicted[i] <- RISCA::rmst(object$time.points, object$Surv.test[i,], max.time = time, type = "l")
+  #     pehe[i] <- true[i]-predicted[i]
+  #   }
+  #   return(list(true = true, predicted = predicted, pehe = pehe))
+  # }
 }
