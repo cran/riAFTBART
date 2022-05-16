@@ -100,7 +100,7 @@ cal_PEHE <- function(object, metric, time, LP, lambda, eta){
     for (i in 1:length(LP)){
       integrate_res <- stats::integrate(fun_true, lower = 0, upper = time)
       true[i] <- integrate_res$value
-      predicted[i] <- RISCA::rmst(object$time.points, object$Surv.test[i,], max.time = time)
+      predicted[i] <- RISCA::rmst(object$time.points, object$Surv.test[i,], max.time = time, type = "l")
       pehe[i] <- true[i]-predicted[i]
     }
     return(list(true = true, predicted = predicted, pehe = pehe))
