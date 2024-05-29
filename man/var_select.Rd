@@ -17,7 +17,8 @@ var_select(
   cluster.id,
   verbose = FALSE,
   n_permuate,
-  alpha = 0.1
+  alpha = 0.1,
+  seed = NULL
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ var_select(
 \item{n_permuate}{Number of permutations of the event time together with the censoring indicator to generate the null permutation distribution.}
 
 \item{alpha}{Cut-off level for the thresholds.}
+
+\item{seed}{An optional integer value to set the random seed for reproducibility. Default is NULL.}
 }
 \value{
 A list with the following elements:
@@ -88,6 +91,6 @@ res <- var_select(M.burnin = 10, M.keep = 10, M.thin = 1, status = status,
                       x.train = cbind(x1,x2),
                       x.test = cbind(x1,x2),
                       cluster.id = cluster.id,
-                      n_permuate = 4,alpha = 0.1)
+                      n_permuate = 4,alpha = 0.1,seed = 20181223)
                       }
 }

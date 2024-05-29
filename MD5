@@ -1,8 +1,8 @@
-fd2dd568cd6945e095d86536bd536bf6 *DESCRIPTION
+bff26b232f8ea99222b46661150968df *DESCRIPTION
 b53a0b77222f6972ae092284900ca288 *LICENSE
 dfd311e6476617f93ee37bf3f7ac53a9 *NAMESPACE
 db1775d4dab50cfdc1946fbcd34eed08 *R/Intree.R
-450b67b04d5971af4190365b9b3767d5 *R/Intree_functions.R
+2cf9b89c6f2cd4bfb057c341a11b6100 *R/Intree_functions.R
 03f64b68ab93a7175337325e7c773f11 *R/bisectK.R
 ab97c214a3d8613269883c08cc77792f *R/cal_PEHE.R
 9c5305b4e7354370c93a3094d474245e *R/cal_survprob.R
@@ -16,7 +16,7 @@ ec1553f94a9ed14ace37edace2f2ee15 *R/progress_bar.R
 df89506853e5a81c2b3c5ef7ddc52006 *R/riAFTBART_fit.R
 84584b761849e3a5e610af764dfc8a7f *R/sa.R
 5742e1a9572a5c11a1705d016349fcb4 *R/sampling_funs.R
-46b0934bcb8bf41c8079e96dc3d6e371 *R/var_select.R
+3b247d9448e91d6073a053e8f440d615 *R/var_select.R
 2b0cb3923c60adcbd16e4332892ac07d *man/cal_PEHE.Rd
 51aff5c77c00515a22cecf7f5d1b17fa *man/cal_surv_prob.Rd
 b9e9dae49e77a328748035abd5c8c65e *man/dat_sim.Rd
@@ -27,4 +27,4 @@ b9e9dae49e77a328748035abd5c8c65e *man/dat_sim.Rd
 6ee68f97b3c751b36f55dd649a550ed0 *man/riAFTBART.Rd
 d3e7b7a87dc7c089696ef43e4420495d *man/riAFTBART_fit.Rd
 1048ecc4d90bb2921974b453479f3cff *man/sa.Rd
-991432c52fdb898ed5024b2d2ed5d360 *man/var_select.Rd
+48b5a43b9331dff6b1858d3d5dbd9609 *man/var_select.Rd

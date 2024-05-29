@@ -15,7 +15,8 @@
 #' @param verbose A logical indicating whether to show the progress bar. The default is FALSE.
 #' @param n_permuate Number of permutations of the event time together with the censoring indicator to generate the null permutation distribution.
 #' @param alpha Cut-off level for the thresholds.
-#'
+#' @param seed An optional integer seed for reproducibility of the permutations. Default is NULL.
+#' 
 #' @return A list with the following elements:
 #' \item{var_local_selected:}{A character vector including all the variables selected using Local procedure.}
 #' \item{var_max_selected:}{A character vector including all the variables selected using Global Max procedure.}
@@ -54,9 +55,9 @@
 #'                       x.train = cbind(x1,x2),
 #'                       x.test = cbind(x1,x2),
 #'                       cluster.id = cluster.id,
-#'                       n_permuate = 4,alpha = 0.1)
+#'                       n_permuate = 4,alpha = 0.1,seed = 20181223)
 #'                       }
-var_select <- function(M.burnin, M.keep, M.thin = 1, status, y.train, x.train, trt.train, x.test, trt.test, cluster.id, verbose = FALSE, n_permuate, alpha = 0.1){
+var_select <- function(M.burnin, M.keep, M.thin = 1, status, y.train, x.train, trt.train, x.test, trt.test, cluster.id, verbose = FALSE, n_permuate, alpha = 0.1,seed = NULL){
   # Get the true vip from oberserved data
   riAFTBART_fit_obs <- riAFTBART_fit(M.burnin = M.burnin,
                 M.keep = M.keep,
@@ -73,7 +74,7 @@ var_select <- function(M.burnin, M.keep, M.thin = 1, status, y.train, x.train, t
   n_status <- length(status) # Get the length of the status
   vip_perm_matrix <- matrix(NA, nrow = n_permuate, ncol = length(vip_obs))
   for (i in 1:n_permuate){
-    set.seed(i)
+    if (!is.null(seed)) set.seed(seed + i)
     index <- sample(1:n_status) # Get the permutation index
     riAFTBART_fit_perm <- riAFTBART_fit(M.burnin = M.burnin,
                                        M.keep = M.keep,

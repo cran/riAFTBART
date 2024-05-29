@@ -31,9 +31,7 @@ extractRules <-
       allRulesList = c(allRulesList, res$ruleSet)
     }
     allRulesList <- allRulesList[!unlist(lapply(allRulesList, is.null))]
-    cat(paste(length(allRulesList)," rules (length<=",
-              max_length, ") were extracted from the first ", ntree," trees.","\n",sep=""))
-
+    message(length(allRulesList), " rules (length<=", max_length, ") were extracted from the first ", ntree, " trees.")
     rulesExec <- ruleList2Exec(X,allRulesList)
     return(rulesExec)
   }
@@ -50,7 +48,7 @@ getRuleMetric <-
     dIx <- which(ruleMetric[,"len"]=="-1")
     if(length(dIx)>0){
       ruleMetric <- ruleMetric[-dIx,]
-      print(paste( length(dIx)," paths are ignored.",sep=""))
+      message(paste(length(dIx), " paths are ignored."))
     }
     return(ruleMetric)
     #qIx = order((1- as.numeric(ruleMetric[,"err"])),
